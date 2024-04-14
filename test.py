@@ -1,6 +1,12 @@
-from pyLunar import LunarDate
+from zhLunarDate import DateTime
 
 import zhdate
 
-print(LunarDate.from_lunar(zhdate.ZhDate.today().lunar_year,zhdate.ZhDate.today().lunar_month,zhdate.ZhDate.today().leap_month,zhdate.ZhDate.today().lunar_day))
+# print(DateTime.today().to_lunar())
 
+# print(DateTime.today().to_lunar().hànzì())
+
+# print(DateTime.from_lunar(zhdate.ZhDate.today().lunar_year,zhdate.ZhDate.today().lunar_month,zhdate.ZhDate.today().leap_month,zhdate.ZhDate.today().lunar_day).to_lunar().hànzì())
+
+while True:
+    print(DateTime.today().to_lunar().hànzì(),end="\r")

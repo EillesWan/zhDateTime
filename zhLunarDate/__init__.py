@@ -13,16 +13,16 @@ __version__ = "0.0.1"
 __all__ = [
     "get_lunar_new_year",
     "get_lunar_month_list",
-    "verify_legal_lunar_date",
-    "LunarDateInfo",
-    "LunarDate",
+    "verify_lunar_date",
+    "LunarDateTime",
+    "DateTime",
 ]
 
 
 from .main import (
     get_lunar_new_year,
     get_lunar_month_list,
-    verify_legal_lunar_date,
-    LunarDateInfo,
-    LunarDate,
+    verify_lunar_date,
+    LunarDateTime,
+    DateTime,
 )

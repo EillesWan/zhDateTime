@@ -5,8 +5,12 @@
 
 目前仅支持农历转阳历
 
+### 参标
+
+1.  本库的农历日期计算方法参照[《中华人民共和国国家标准GB/T33661—2017〈农历的编算和颁行〉》](https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=E107EA4DE9725EDF819F33C60A44B296)
+
 ### 致谢
 
 1.  感谢[香港天文台](https://www.hko.gov.hk/tc/index.html)[公历与农历日期对照表](https://www.hko.gov.hk/tc/gts/time/conversion1_text.htm)提供的自公历1901年至公历2100年的农历日期对照数据
-2.  感谢[ZhDate](https://github.com/CutePandaSh/zhdate)项目启发，以至于作者决定开发此项目，作者曾去那贡献过代码（awa）
-3.  感谢[CNLunar相关代码](https://github.com/OPN48/cnlunar/blob/master/cnlunar/config.py)为存储日期的方式样式提供启发
+2.  感谢[zhdate](https://github.com/CutePandaSh/zhdate)项目启发，以至于作者决定开发此项目，作者曾去那贡献过代码（awa）
+3.  感谢[cnlunar相关代码](https://github.com/OPN48/cnlunar/blob/master/cnlunar/config.py)为存储日期的方式样式提供启发

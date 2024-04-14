@@ -2,11 +2,11 @@
 
 import setuptools
 
-import pyLunar
+import zhLunarDate
 
 setuptools.setup(
     name="pyLunar",
-    version=pyLunar.__version__,
+    version=zhLunarDate.__version__,
     author="Eilles Wan",
     author_email="EillesWan@outlook.com",
     description="简易Python农历日期库，利用本地数据进行公历、农历互相转换",
