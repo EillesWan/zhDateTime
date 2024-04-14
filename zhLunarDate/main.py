@@ -382,8 +382,10 @@ class LunarDateTime:
                 else 十倍数字单位[self.lunar_day // 10]
                 + (HANNUM[self.lunar_day % 10] if self.lunar_day % 10 else "")
             ),
+
             地支时=DÌZHĪ[self.shichen],
-            刻=("" if (self.shichen + 1 == 0) else ("又" if ((self.minutes)or(self.seconds)or(self.microseconds)) else "整"))if self.quarters == 0 else (HANNUM[self.quarters]+"刻"),
+
+            刻=("" if ((self.minutes)or(self.seconds)or(self.microseconds)) else "整")if self.quarters == 0 else (HANNUM[self.quarters]+"刻"),
 
             分钟=("" if self.quarters == 0 else("又" if ((self.seconds)or(self.microseconds)) else  "整")) if self.minutes == 0 else (("十" if self.minutes == 10 else ((HANNUM[self.minutes // 10]+"十")if self.minutes > 10 else "")+(HANNUM[self.minutes % 10] if self.minutes%10 else ""))+"分钟"),
 
