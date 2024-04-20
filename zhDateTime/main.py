@@ -11,8 +11,8 @@ file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import datetime
 from dataclasses import dataclass
-from typing import Tuple, List, Optional, Union, Callable
 
+from .types import Tuple, List, Optional, Union, Callable,ShíchenString,XXIVShíChenString
 from .constants import (
     LUNAR_NEW_YEAR_DATE,
     LUNAR_MONTH_PER_YEAR,
@@ -23,13 +23,21 @@ from .constants import (
     SHĒNGXIÀO,
     YUÈFÈN,
     十倍数字单位,
+    二十四时辰,
 )
 
 """
-警告
+    警告
 本软件之源码中包含大量简体汉语，不懂的话请自行离开。
-WARNING
-This source code contains plenty of simplified Han characters
+
+    注意
+此軟體源碼内含大量簡化字，如有不解請勿觀看。
+
+    WARNING
+This source code contains plenty of simplified Han characters.
+
+    诫曰
+众汉语字含于此软件源码，非通勿入。
 """
 
 
@@ -209,67 +217,78 @@ verify_lunar_date: Callable[[int, int, bool, int], Tuple[bool, int, int]] = (
 """
 
 
-shíchen2int: Callable[
-    [
-        str,
-    ],
-    int,
-] = lambda DÌZHĪ: DÌZHĪ.find(DÌZHĪ[0])
-"""
-将给出的地支时辰字符串转为时辰数
+def shíchen2int(dìzhī:Union[ShíchenString, XXIVShíChenString],xxiv:bool=False):
+    """
+    将给出的地支时辰字符串转为时辰数
 
-参数
-----
-    DÌZHĪ: str 地支时辰字串
+    参数
+    ----
+        dìzhī: str 地支时辰字串
+        xxiv: bool 是否使用二十四时辰表示法
 
-返回值
-------
-    int 当前时辰
-"""
+    返回值
+    ------
+        int 时辰之数字
+    """
+    return (二十四时辰.index(dìzhī[:2]) if dìzhī[:2] in 二十四时辰 else -1) if xxiv else DÌZHĪ.find(dìzhī[0])
+    # 其实，二十四时辰完全可以算的出来，而不用index这样丑陋
+    # 但是，平衡一下我们所需要的时间和空间
+    # 不难发现，如果利用计算来转，虽然对空间需求确实减少了
+    # 但是消耗的计算量是得不偿失的，更何况计算还占一部分内存
+    # 有人曾经对我说，小于128字节的内存优化都等于没有
+    # 我也坚信在现在这个时代实实在在是这样的
+    # 从来如此，还会错吗？
+    # if xxiv:
+    #     return DÌZHĪ.find(dìzhī[0])*2+(0 if dìzhī[1] == '初' else (1 if dìzhī[1] == "正" else -1))
 
-shíchen_kè2hour_minute: Callable[
-    [int, int],
-    Tuple[int, int],
-] = lambda shichen, quarter: (
+
+def shíchen_kè2hour_minute(shichen:int, quarter:int, xxiv:bool=False)->Tuple[int,int]:
+    """
+    给出时辰和刻数，返回小时和分钟
+
+    参数
+    ----
+        shichen: int 时辰
+        quarter: int 刻
+        xxiv: bool 是否使用二十四时辰表示法
+
+    返回值
+    ------
+        Tuple(int小时, int分钟, )时间
+    """
+    return ((shichen-1)%24,quarter*15) if xxiv else (
     (23 + (shichen * 2) + (quarter // 4)) % 24,
     (quarter * 15) % 60,
 )
-"""
-给出时辰和刻数，返回小时和分钟
-
-参数
-----
-    shichen: int 时辰
-    quarter: int 刻
-
-返回值
-------
-    Tuple(int小时, int分钟, )时间
-"""
 
 
-hour_minute2shíchen_kè: Callable[[int, int], Tuple[int, int]] = lambda hours, minutes: (
+def hour_minute2shíchen_kè(hours:int, minutes:int, xxiv:bool=False)->Tuple[int,int]:
+    """
+    给出小时和分钟，返回时辰和刻数
+
+    参数
+    ----
+        hours: int 小时数
+        minutes: int 分钟
+        xxiv: bool 是否使用二十四时辰表示法
+
+    返回值
+    ------
+        Tuple(int时辰, int刻数, )古法时间
+    """
+    return ((hours+1)%24,minutes//15) if xxiv else (
     (shichen := (((hours := hours + (minutes // 60)) + 1) // 2) % 12),
     (((hours - ((shichen * 2 - 1) % 24)) % 24) * 60 + (minutes % 60)) // 15,
 )
-"""
-给出小时和分钟，返回时辰和刻数
 
-参数
-----
-    hours: int 小时数
-    minutes: int 分钟
 
-返回值
-------
-    Tuple(int时辰, int刻数, )古法时间
-"""
+
 
 
 @dataclass(init=False)
-class LunarDateTime:
+class zhDateTime:
     """
-    农历日期时间
+    中式传统日期时间
     """
 
     lunar_year: int
@@ -288,7 +307,7 @@ class LunarDateTime:
         lunar_month_: int,
         is_leap_: Optional[bool],
         lunar_day_: int,
-        shichen_: Union[int, str] = 0,
+        shichen_: Union[int, ShíchenString] = 0,
         quarters_: int = 4,
         minutes_: int = 0,
         seconds_: int = 0,
@@ -368,7 +387,7 @@ class LunarDateTime:
         )
 
     def hànzì(self) -> str:
-        return "{汉字数字} {天干地支年}{生肖}年{月份}月{日期}日 {地支时}时{刻}{分钟}{秒}{忽}{微}{纤}".format(
+        return "{汉字数字} {天干地支年}{生肖}年{月份}月{日期}日 {地支时}时{刻} {分钟}{秒}{忽}{微}{纤}".format(
             汉字数字="".join(
                 [HANNUM[(self.lunar_year // (10**i)) % 10] for i in range(3, -1, -1)]
             ),
@@ -411,7 +430,7 @@ class DateTime(datetime.datetime):
         lunar_month: int,
         is_leap: Optional[bool],
         lunar_day: int,
-        shichen: Union[int, str] = 0,
+        shichen: Union[int, ShíchenString] = 0,
         quarters: int = 4,
         minutes: int = 0,
         seconds: int = 0,
@@ -458,9 +477,9 @@ class DateTime(datetime.datetime):
                 )
             )
 
-    def to_lunar(self) -> LunarDateTime:
+    def to_lunar(self) -> zhDateTime:
 
-        return LunarDateTime.from_solar(
+        return zhDateTime.from_solar(
             self.year,
             self.month,
             self.day,

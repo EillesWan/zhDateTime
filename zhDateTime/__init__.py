@@ -14,7 +14,7 @@ __all__ = [
     "get_lunar_new_year",
     "get_lunar_month_list",
     "verify_lunar_date",
-    "LunarDateTime",
+    "zhDateTime",
     "DateTime",
 ]
 
@@ -23,6 +23,6 @@ from .main import (
     get_lunar_new_year,
     get_lunar_month_list,
     verify_lunar_date,
-    LunarDateTime,
+    zhDateTime,
     DateTime,
 )

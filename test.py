@@ -1,4 +1,4 @@
-from zhLunarDate import DateTime
+from zhDateTime import DateTime
 
 import zhdate
 
