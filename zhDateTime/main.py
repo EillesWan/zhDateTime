@@ -12,7 +12,16 @@ file, You can obtain one at http://mozilla.org/MPL/2.0/.
 import datetime
 from dataclasses import dataclass
 
-from .types import Tuple, List, Optional, Union, Callable,ShíchenString,XXIVShíChenString
+from .types import (
+    Tuple,
+    List,
+    Optional,
+    Union,
+    Callable,
+    ShíchenString,
+    XXIVShíChenString,
+    HànziNumericUnitsString,
+)
 from .constants import (
     LUNAR_NEW_YEAR_DATE,
     LUNAR_MONTH_PER_YEAR,
@@ -22,8 +31,10 @@ from .constants import (
     HANNUM,
     SHĒNGXIÀO,
     YUÈFÈN,
-    十倍数字单位,
-    二十四时辰,
+    HÀNUNIT10P,
+    XXIVSHÍCHEN,
+    HÀNUNITLK,
+    HÀNUNITRW,
 )
 
 """
@@ -217,7 +228,7 @@ verify_lunar_date: Callable[[int, int, bool, int], Tuple[bool, int, int]] = (
 """
 
 
-def shíchen2int(dìzhī:Union[ShíchenString, XXIVShíChenString],xxiv:bool=False):
+def shíchen2int(dìzhī: Union[ShíchenString, XXIVShíChenString], xxiv: bool = False):
     """
     将给出的地支时辰字符串转为时辰数
 
@@ -230,19 +241,25 @@ def shíchen2int(dìzhī:Union[ShíchenString, XXIVShíChenString],xxiv:bool=Fal
     ------
         int 时辰之数字
     """
-    return (二十四时辰.index(dìzhī[:2]) if dìzhī[:2] in 二十四时辰 else -1) if xxiv else DÌZHĪ.find(dìzhī[0])
+    return (
+        (XXIVSHÍCHEN.index(dìzhī[:2]) if dìzhī[:2] in XXIVSHÍCHEN else -1)
+        if xxiv
+        else DÌZHĪ.find(dìzhī[0])
+    )
     # 其实，二十四时辰完全可以算的出来，而不用index这样丑陋
     # 但是，平衡一下我们所需要的时间和空间
     # 不难发现，如果利用计算来转，虽然对空间需求确实减少了
     # 但是消耗的计算量是得不偿失的，更何况计算还占一部分内存
-    # 有人曾经对我说，小于128字节的内存优化都等于没有
+    # 有人曾经对我说，小于一千字节的内存优化都等于没有
     # 我也坚信在现在这个时代实实在在是这样的
     # 从来如此，还会错吗？
     # if xxiv:
     #     return DÌZHĪ.find(dìzhī[0])*2+(0 if dìzhī[1] == '初' else (1 if dìzhī[1] == "正" else -1))
 
 
-def shíchen_kè2hour_minute(shichen:int, quarter:int, xxiv:bool=False)->Tuple[int,int]:
+def shíchen_kè_2_hour_minute(
+    shichen: int, quarter: int, xxiv: bool = False
+) -> Tuple[int, int]:
     """
     给出时辰和刻数，返回小时和分钟
 
@@ -256,13 +273,19 @@ def shíchen_kè2hour_minute(shichen:int, quarter:int, xxiv:bool=False)->Tuple[i
     ------
         Tuple(int小时, int分钟, )时间
     """
-    return ((shichen-1)%24,quarter*15) if xxiv else (
-    (23 + (shichen * 2) + (quarter // 4)) % 24,
-    (quarter * 15) % 60,
-)
+    return (
+        ((shichen - 1) % 24, quarter * 15)
+        if xxiv
+        else (
+            (23 + (shichen * 2) + (quarter // 4)) % 24,
+            (quarter * 15) % 60,
+        )
+    )
 
 
-def hour_minute2shíchen_kè(hours:int, minutes:int, xxiv:bool=False)->Tuple[int,int]:
+def hour_minute_2_shíchen_kè(
+    hours: int, minutes: int, xxiv: bool = False
+) -> Tuple[int, int]:
     """
     给出小时和分钟，返回时辰和刻数
 
@@ -276,13 +299,173 @@ def hour_minute2shíchen_kè(hours:int, minutes:int, xxiv:bool=False)->Tuple[int
     ------
         Tuple(int时辰, int刻数, )古法时间
     """
-    return ((hours+1)%24,minutes//15) if xxiv else (
-    (shichen := (((hours := hours + (minutes // 60)) + 1) // 2) % 12),
-    (((hours - ((shichen * 2 - 1) % 24)) % 24) * 60 + (minutes % 60)) // 15,
-)
+    return (
+        ((hours + 1) % 24, minutes // 15)
+        if xxiv
+        else (
+            (shichen := (((hours := hours + (minutes // 60)) + 1) // 2) % 12),
+            (((hours - ((shichen * 2 - 1) % 24)) % 24) * 60 + (minutes % 60)) // 15,
+        )
+    )
 
 
+def int_grouping(integer: int) -> List[Union[int, HànziNumericUnitsString]]:
+    """
+    整数分组，依据汉字标准
 
+    参数
+    ----
+        integer: int 整数
+
+    返回值
+    ------
+        List[Union[int, HànziNumericUnitsString]] 汉字分组后的列表
+    """
+    # 应该没有大于 999999999999999999999999999999999999999999999999
+    # 即 9999载9999正9999涧9999沟9999穰9999秭9999垓9999京9999兆9999亿9999万9999
+    # 的数吧
+    if integer:
+        final_result = []
+        unit = 0
+        while integer:
+            final_result.insert(
+                0,
+                integer % 10000,
+            )
+            final_result.insert(
+                0,
+                HÀNUNITRW[unit],
+            )
+            integer //= 10000
+            unit += 1
+        return final_result[1:]
+    else:
+        return [0]
+
+
+def int_2_grouped_hàn(integer: int) -> List[Union[int, HànziNumericUnitsString]]:
+    """
+    整数汉字分组读法
+
+    参数
+    ----
+        integer: int 整数
+
+    返回值
+    ------
+        List[Union[int, HànziNumericUnitsString]] 汉字分组后的列表，包括读出的零
+    """
+    result: List[Union[int, HànziNumericUnitsString]] = ["零"]
+    skip = False
+    for ppc in int_grouping(integer):
+        if skip:
+            skip = False
+            continue
+        elif ppc == 0:
+            if result[-1] != "零":
+                result.append("零")
+            skip = True
+            continue
+        elif isinstance(ppc, int):
+            if ppc < 1000:
+                if result[-1] != "零":
+                    result.append("零")
+        result.append(ppc)
+    return result[1:]
+
+
+def int_2_grouped_hàn_str(integer: int) -> str:
+    """
+    整数汉字分组
+
+    参数
+    ----
+        integer: int 整数
+
+    返回值
+    ------
+        str 汉字分组后的字符串
+    """
+    return "".join([str(i) for i in int_2_grouped_hàn(integer)])
+
+
+def lkint_hànzìfy(integer: int) -> str:
+    """
+    万以内的数字汉字化
+
+    参数
+    ----
+        integer: int 千以内的整数
+
+    返回值
+    ------
+        str 汉字表达的整数
+    """
+    if integer == 0:
+        return "零"
+    elif integer == 10:
+        return "十"
+    elif integer < 100:
+        if integer % 10 == 0:
+            return HANNUM[integer // 10] + "十"
+        elif integer < 30:
+            if integer > 20:
+                return "廿" + HANNUM[integer % 10]
+            elif integer > 10:
+                return "十" + HANNUM[integer % 10]
+            else:
+                return HANNUM[integer % 10]
+        else:
+            return HANNUM[integer // 10] + "十" + HANNUM[integer % 10]
+    elif integer < 1000:
+        if integer % 100 == 0:
+            return HANNUM[integer // 100] + "百"
+        elif (integer // 10) % 10 == 0:
+            return HANNUM[integer // 100] + "百零" + HANNUM[integer % 10]
+        else:
+            return (
+                HANNUM[integer // 100]
+                + "百"
+                + HANNUM[(integer // 10) % 10]
+                + "十"
+                + (HANNUM[integer % 10] if integer % 10 else "")
+            )
+    else:
+        if integer % 1000 == 0:
+            return HANNUM[integer // 1000] + "千"
+        elif (integer // 100) % 10 == 0:
+            if (integer // 10) % 10 == 0:
+                return HANNUM[integer // 1000] + "千零" + HANNUM[integer % 10]
+            else:
+                return (
+                    HANNUM[integer // 1000]
+                    + "千零"
+                    + HANNUM[(integer // 10) % 10]
+                    + "十"
+                    + (HANNUM[integer % 10] if integer % 10 else "")
+                )
+        else:
+            return HANNUM[integer // 1000] + "千" + lkint_hànzìfy(integer % 1000)
+
+
+def int_hànzìfy(integer: int) -> str:
+    """
+    整数的汉字化
+
+    参数
+    ----
+        integer: int 整数
+
+    返回值
+    ------
+        str 汉字表达的整数
+    """
+    return "".join(
+        [
+            lkint_hànzìfy(i) if isinstance(i, int) else i
+            for i in int_2_grouped_hàn(integer)
+        ]
+    )
 
 
 @dataclass(init=False)
@@ -380,14 +563,40 @@ class zhDateTime:
             temp_month - ((leap_month > 0) and (temp_month > leap_month)),
             (leap_month > 0) and (temp_month == leap_month + 1),
             passed_days - sum(months) + 1,
-            *hour_minute2shíchen_kè(hour, (minute:=(minute + (second // 60)))),
+            *hour_minute_2_shíchen_kè(hour, (minute := (minute + (second // 60)))),
             minute % 15,
             (second % 60) + (microsecond // 1000000),
             microsecond % 1000000,
         )
 
-    def hànzì(self) -> str:
-        return "{汉字数字} {天干地支年}{生肖}年{月份}月{日期}日 {地支时}时{刻} {分钟}{秒}{忽}{微}{纤}".format(
+    def __str__(self) -> str:
+        return "农历 {}年{}{}月{}日 {}时{}刻{}分{}秒{}".format(
+            self.lunar_year,
+            "闰" if self.is_leap_month else "",
+            self.lunar_month,
+            self.lunar_day,
+            self.shichen,
+            self.quarters,
+            self.minutes,
+            self.seconds,
+            self.microseconds,
+        )
+
+    def __add__(self, time_delta: datetime.timedelta):
+        return (self.to_solar() + time_delta).to_lunar()
+
+    def __sub__(self, datetime_delta):
+        if isinstance(datetime_delta, datetime.timedelta):
+            return (self.to_solar() - datetime_delta).to_lunar()
+        elif isinstance(datetime_delta, DateTime):
+            return self.to_solar() - datetime_delta
+        elif isinstance(datetime_delta, zhDateTime):
+            return self.to_solar() - datetime_delta.to_solar()
+        else:
+            raise TypeError("加减单位不合理：你在用什么相减？")
+
+    def date_hànzì(self) -> str:
+        return "{汉字数字} {天干地支年}{生肖}年{月份}月{日期}日".format(
             汉字数字="".join(
                 [HANNUM[(self.lunar_year // (10**i)) % 10] for i in range(3, -1, -1)]
             ),
@@ -398,27 +607,107 @@ class zhDateTime:
             日期=(
                 HANNUM[self.lunar_day // 10] + "十"
                 if ((self.lunar_day % 10 == 0) and (self.lunar_day > 10))
-                else 十倍数字单位[self.lunar_day // 10]
+                else HÀNUNIT10P[self.lunar_day // 10]
                 + (HANNUM[self.lunar_day % 10] if self.lunar_day % 10 else "")
             ),
+        )
 
-            地支时=DÌZHĪ[self.shichen],
+    def date_hanzify(self) -> str:
+        return self.date_hànzì()
 
-            刻=("" if ((self.minutes)or(self.seconds)or(self.microseconds)) else "整")if self.quarters == 0 else (HANNUM[self.quarters]+"刻"),
+    def time_hànzì(self) -> str:
+        return "{地支时}时{刻} {分}{秒}{忽} {微}{纤}".format(
+            地支时=DÌZHĪ[self.shichen]
+            + (
+                ""
+                if (
+                    (self.quarters)
+                    or (self.minutes)
+                    or (self.seconds)
+                    or (self.microseconds)
+                )
+                else "整"
+            ),
+            刻=(
+                HANNUM[self.quarters]
+                + "刻"
+                + (
+                    ""
+                    if ((self.minutes) or (self.seconds) or (self.microseconds))
+                    else "整"
+                )
+            ),
+            分=(
+                ("又" if self.quarters else "零")
+                + (
+                    (
+                        lkint_hànzìfy(self.minutes)
+                        + "分"
+                        + ("" if ((self.seconds) or (self.microseconds)) else "整")
+                    )
+                    if self.minutes
+                    else ""
+                )
+            ),
+            秒=(
+                lkint_hànzìfy(self.seconds)
+                + "秒"
+                + ("" if (self.microseconds) else "整")
+            ),
+            忽=(
+                HANNUM[(self.microseconds // 100000) % 10]
+                + HANNUM[(self.microseconds // 10000) % 10]
+            ).replace("〇", "零"),
+            微=(
+                (
+                    "余"
+                    + (
+                        (
+                            lkint_hànzìfy(wēi)
+                            + "微"
+                            + ("" if (self.microseconds % 100) else "整")
+                        )
+                        if wēi
+                        else ""
+                    )
+                )
+                if (
+                    (wēi := ((self.microseconds // 100) % 100))
+                    or (self.microseconds % 100)
+                )
+                else ""
+            ),
+            纤=(
+                (lkint_hànzìfy(xiān) + "纤")
+                if (xiān := (self.microseconds % 100))
+                else ""
+            ),
+        )
 
-            分钟=("" if self.quarters == 0 else("又" if ((self.seconds)or(self.microseconds)) else  "整")) if self.minutes == 0 else (("十" if self.minutes == 10 else ((HANNUM[self.minutes // 10]+"十")if self.minutes > 10 else "")+(HANNUM[self.minutes % 10] if self.minutes%10 else ""))+"分钟"),
+    def time_hanzify(self) -> str:
+        return self.time_hànzì()
 
-            秒=(""if self.minutes == 0 else("又" if self.microseconds else  "整")) if self.seconds == 0 else (("十" if self.seconds == 10 else ((HANNUM[self.seconds // 10]+"十")if self.seconds > 10 else "")+(HANNUM[self.seconds % 10]if self.seconds % 10 else ""))+"秒"),
-
-            忽=(""if self.seconds ==0 else("又" if (self.microseconds%10000) else  "整"))if ((hū:=(self.microseconds // 10000)) == 0) else (("十" if hū == 10 else ((HANNUM[hū // 10]+"十")if hū > 10 else "")+(HANNUM[hū % 10] if hū % 10 else ""))+"忽"),
-
-            微=("又" if ((self.microseconds%100) and(self.microseconds//10000)) else "")if ((wēi:=((self.microseconds // 100)%100)) == 0) else (("十" if wēi == 10 else ((HANNUM[wēi // 10]+"十")if wēi > 10 else "")+(HANNUM[wēi % 10] if (wēi %10 ) else ""))+"微"),
-
-            纤="" if ((xiān:=(self.microseconds%100)) == 0) else (("十" if xiān == 10 else ((HANNUM[xiān // 10]+"十")if xiān > 10 else "")+(HANNUM[xiān % 10])if (xiān % 10) else "")+"纤"),
+    def hànzì(self) -> str:
+        return "{汉字日期} {汉字时刻}".format(
+            汉字日期=self.date_hànzì(),
+            汉字时刻=self.time_hànzì(),
         )
 
     def hanzify(self) -> str:
         return self.hànzì()
+
+    def to_solar(self):
+        return DateTime.from_lunar(
+            self.lunar_year,
+            self.lunar_month,
+            self.is_leap_month,
+            self.lunar_day,
+            self.shichen,
+            self.quarters,
+            self.minutes,
+            self.seconds,
+            self.microseconds,
+        )
 
 
 class DateTime(datetime.datetime):
@@ -443,7 +732,7 @@ class DateTime(datetime.datetime):
                 lunar_year, lunar_month, is_leap, lunar_day
             )
         )[0]:
-            _hours, _minutes = shíchen_kè2hour_minute(
+            _hours, _minutes = shíchen_kè_2_hour_minute(
                 shichen if isinstance(shichen, int) else shíchen2int(shichen), quarters
             )
             return cls(

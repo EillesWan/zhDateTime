@@ -14,10 +14,22 @@ file, You can obtain one at http://mozilla.org/MPL/2.0/.
 汉字数字
 """
 
-十倍数字单位 = SHÍBÈI = NUFMOT = "初十廿卅"
+十倍汉字数字单位 = HÀNUNIT10P = "初十廿卅"
 """
 仅出现在十倍的数字单位
 Numeric Units for Multiples of Ten
+"""
+
+万内汉字计数单位 = HÀNUNITLK = "十百千"
+"""
+万以内的汉字计数单位
+"""
+
+千外汉字数字单位 = HÀNUNITRW = (
+    "万亿兆京垓秭穰沟涧正载 "  # 请保留此处空格，参见 main.py的int_hàn_grouping函数
+)
+"""
+千以上的汉字计数单位
 """
 
 月份数字 = YUÈFÈN = MONTHNUM = " 正二三四五六七八九十⑾腊"
