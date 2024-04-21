@@ -115,7 +115,7 @@ def decode_lunar_month_code(
     ------
         Tuple(List[int当月天数, ]当年每月天数, int闰月之月份, )当年每月天数列表及闰月月份
     """
-    leap_month = month_code & 0b1111000000000000
+    leap_month = (month_code & 0b1111000000000000) >> 12
     return (
         [month_days_pusher(month_code, i) for i in range(leap_month)][::-1]
         + [
@@ -180,52 +180,60 @@ get_lunar_month_list: Callable[[int], Tuple[List[int], int]] = (
 """
 
 
-verify_lunar_date: Callable[[int, int, bool, int], Tuple[bool, int, int]] = (
-    lambda lunar_year, lunar_month, is_leap, lunar_day: (
-        (
-            (1900 <= lunar_year <= 2100)  # 确认年份范围
-            and (1 <= lunar_month <= 12)  # 确认月份范围
-            and (
-                (  # 当为闰月时
-                    1
-                    <= lunar_day
-                    <= (leap_days := get_lunar_leap_size(lunar_year))  # 获取闰月日数
-                    and (
-                        lunar_month
-                        == (lunar_month_code := get_lunar_month_code(lunar_year))
-                    )  # 确认此月闰月与否
-                )
-                if is_leap
-                else (  # 当非闰月时，确认日期范围
-                    (leap_days := 0)  # 非闰月的闰月日期数位0
-                    < lunar_day
-                    <= (  # 获取当月日数
-                        month_days_pusher(
-                            (lunar_month_code := get_lunar_month_code(lunar_year)),
-                            lunar_month,
-                        )
+def verify_lunar_date(
+    lunar_year: int, lunar_month: int, is_leap: bool, lunar_day: int
+) -> Tuple[
+    bool,
+    List[int],
+    int,
+]:
+    """
+    检查所给出之农历日期是否符合本库之可用性
+
+    参数
+    ----
+        lunar_year: int 农历年份
+        lunar_month: int 农历月份
+        is_leap: bool 当月是否为闰月
+        lunar_day: int 当月天数
+
+    返回值
+    ------
+        Tuple(bool该日期是否可用, List[int]每月天数, int闰月月份)
+    """
+    lunar_month_data = None
+    verify_result = (
+        (1900 <= lunar_year <= 2100)  # 确认年份范围
+        and (1 <= lunar_month <= 12)  # 确认月份范围
+        and (
+            (  # 当为闰月时
+                1 <= lunar_day <= get_lunar_leap_size(lunar_year)  # 获取闰月日数
+                and (
+                    lunar_month
+                    == (lunar_month_data := get_lunar_month_list(lunar_year))[1]
+                )  # 确认此月闰月与否
+            )
+            if is_leap
+            else (  # 当非闰月时，确认日期范围
+                1
+                <= lunar_day
+                <= (  # 获取当月日数
+                    month_days_pusher(
+                        get_lunar_month_code(lunar_year),
+                        lunar_month,
                     )
                 )
             )
-        ),
-        lunar_month_code,
-        leap_days,
+        )
     )
-)
-"""
-校验所给出之农历日期是否符合本库之可用性
-
-参数
-----
-    lunar_year: int 农历年份
-    lunar_month: int 农历月份
-    is_leap: bool 当月是否为闰月
-    lunar_day: int 当月天数
-
-返回值
-------
-    Tuple(bool该日期是否可用, int当年农历月份信息码, int当年闰月天数)
-"""
+    return (
+        verify_result,
+        *(
+            lunar_month_data
+            if lunar_month_data is not None
+            else get_lunar_month_list(lunar_year)
+        ),
+    )
 
 
 def shíchen2int(dìzhī: Union[ShíchenString, XXIVShíChenString], xxiv: bool = False):
@@ -748,12 +756,12 @@ class DateTime(datetime.datetime):
             ) + datetime.timedelta(
                 days=(
                     sum(
-                        (month_data := decode_lunar_month_code(*lunar_mon_info[1:]))[0][
+                        (lunar_mon_info[1])[
                             : lunar_month
                             - (
                                 not (
-                                    (is_leap and (lunar_month > month_data[1]))
-                                    and month_data[1]
+                                    (is_leap and (lunar_month > lunar_mon_info[2]))
+                                    and lunar_mon_info[2]
                                 )
                             )
                         ]

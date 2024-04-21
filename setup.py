@@ -5,7 +5,7 @@ import setuptools
 import zhDateTime
 
 setuptools.setup(
-    name="pyDateTime",
+    name="zhDateTime",
     version=zhDateTime.__version__,
     author="Eilles Wan",
     author_email="EillesWan@outlook.com",
