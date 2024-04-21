@@ -52,7 +52,7 @@ Numeric Units for Multiples of Ten
 地支
 """
 
-二十四时辰 = XXIVSHÍCHEN = [
+二十四时辰 = XXIVSHÍCHEN = XXIVSHICHEN = [
     "子初",
     "子正",
     "丑初",

@@ -309,7 +309,7 @@ def hour_minute_2_shíchen_kè(
     )
 
 
-def int_grouping(integer: int) -> List[Union[int, HànziNumericUnitsString]]:
+def int_group(integer: int) -> List[Union[int, HànziNumericUnitsString]]:
     """
     整数分组，依据汉字标准
 
@@ -343,7 +343,7 @@ def int_grouping(integer: int) -> List[Union[int, HànziNumericUnitsString]]:
         return [0]
 
 
-def int_2_grouped_hàn(integer: int) -> List[Union[int, HànziNumericUnitsString]]:
+def int_group_seperated(integer: int) -> List[Union[int, HànziNumericUnitsString]]:
     """
     整数汉字分组读法
 
@@ -357,7 +357,7 @@ def int_2_grouped_hàn(integer: int) -> List[Union[int, HànziNumericUnitsString
     """
     result: List[Union[int, HànziNumericUnitsString]] = ["零"]
     skip = False
-    for ppc in int_grouping(integer):
+    for ppc in int_group(integer):
         if skip:
             skip = False
             continue
@@ -386,7 +386,7 @@ def int_2_grouped_hàn_str(integer: int) -> str:
     ------
         str 汉字分组后的字符串
     """
-    return "".join([str(i) for i in int_2_grouped_hàn(integer)])
+    return "".join([str(i) for i in int_group_seperated(integer)])
 
 
 def lkint_hànzìfy(integer: int) -> str:
@@ -463,7 +463,7 @@ def int_hànzìfy(integer: int) -> str:
     return "".join(
         [
             lkint_hànzìfy(i) if isinstance(i, int) else i
-            for i in int_2_grouped_hàn(integer)
+            for i in int_group_seperated(integer)
         ]
     )
 
@@ -629,12 +629,15 @@ class zhDateTime:
                 else "整"
             ),
             刻=(
-                HANNUM[self.quarters]
-                + "刻"
-                + (
-                    ""
-                    if ((self.minutes) or (self.seconds) or (self.microseconds))
-                    else "整"
+                (
+                    (HANNUM[self.quarters] + "刻")
+                    + (
+                        ""
+                        if ((self.minutes) or (self.seconds) or (self.microseconds))
+                        else "整"
+                    )
+                    if self.quarters
+                    else ""
                 )
             ),
             分=(

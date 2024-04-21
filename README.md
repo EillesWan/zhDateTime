@@ -2,7 +2,99 @@
 
 ### 简介
 
-一个简单的小巧的轻量级中式日期时间库，支持农历公历互相转换，支持时辰刻数的时间表达转换。
+一个简单的小巧的轻量级中式日期时间库，支持农历公历互相转换，支持时辰刻数的时间表达转换，支持整数汉字化。
+
+### 用法
+
+1.  农历与公历
+
+```python
+from zhDateTime import DateTime,zhDateTime
+
+# 利用DateTime类创建公历日期
+solar_date = DateTime(2020,5,20)
+# 利用to_lunar函数转换为农历日期
+lunar_date = solar.to_lunar()
+
+# 利用zhDateTime类创建农历日期
+date_lunar = zhDateTime(2024,3,False,13)    # 此处之False示意是否为闰月
+# 利用to_solar函数转换为公历日期
+date_solar = date_lunar.to_solar()
+
+
+# 也可以通过各自的类函数进行自主创建
+a_solar_date = DateTime.from_lunar(2024,3,False,13)
+a_lunar_date = zhDateTime.from_solar(2020,5,20)
+
+
+# zhDateTime类可以进行汉字化输出
+print(DateTime.now().to_lunar().hanzify())
+# 输出应类似 二〇二四 甲辰龙年三月十三日 午时 零十四分三秒九二 余十九微七十八纤
+# 也可以分日期和时间输出不同部分
+print(DateTime.now().to_lunar().date_hanzify())
+# 类似 二〇二四 甲辰龙年三月十二日
+print(DateTime.now().to_lunar().time_hanzify())
+# 类似 午时三刻 又一分三十秒三九 余五十五微六十纤
+
+
+# 此二类者，皆可己为加减
+print(
+    (zhDateTime(2024,3,False,12) + (DateTime.now() - DateTime(2024,3,1)))
+    - (DateTime.now().to_lunar() - zhDateTime(2023,2,False,1))
+)
+# 输出应为zhDateTime类，类似 农历 2023年3月22日 0时4刻0分0秒0
+```
+
+2.  汉字数字表示法
+
+```python
+# 对整数进行汉字分组
+
+# 分离各个单位，不进行其他处理
+from zhDateTime import int_group
+print(int_group(1010045760500200000000026410400044640400000002))
+# 应为 [10, '载', 1004, '正', 5760, '涧', 5002, '沟', 0, '穰', 0, '秭', 264, '垓', 1040, '京', 44, '兆', 6404, ' 亿', 0, '万', 2]
+
+# 分离单位的同时，包括中间的“零”
+from zhDateTime import int_group_seperated
+print(int_group_seperated(1010045760500200000000026410400044640400000002))
+# 应为 [10, '载', 1004, '正', 5760, '涧', 5002, '沟', '零', 264, '垓', 1040, '京', '零', 44, '兆', 6404, '亿', ' 零', 2]
+
+# 输出分离后的字符串，包括中间的“零”
+from zhDateTime import int_2_grouped_han_str
+print(int_2_grouped_han_str(1010045760500200000000026410400044640400000002))
+# 应为 10载1004正5760涧5002沟零264垓1040京零44兆6404亿零2
+
+
+# 四位以内整数的汉字化读法
+from zhDateTime import lkint_hanzify
+lkint_hanzify(1534)
+# 一千五百三十四
+lkint_hanzify(1020)
+# 一千零二十
+lkint_hanzify(29)
+# 廿九
+
+# 常规整数汉字化读法
+from zhDateTime import int_hanzify
+int_hanzify(1010045760500200000000026410400044640400000002)
+# 十载一千零四正五千七百六十涧五千零二沟零二百六十四垓一千零四十京零四十四兆六千四百零四亿零二
+
+```
+
+3.  日期相关数据
+
+```python
+# 就这四个函数，，，自己看一下函数文档吧
+from zhDateTime import (
+    shichen_ke_2_hour_minute,
+    hour_minute_2_shichen_ke,
+    get_lunar_month_list,
+    get_lunar_new_year,
+    verify_lunar_date,
+)
+
+```
 
 ### 参标
 
