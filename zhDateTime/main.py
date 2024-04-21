@@ -666,9 +666,13 @@ class zhDateTime:
                 + ("" if (self.microseconds) else "整")
             ),
             忽=(
-                HANNUM[(self.microseconds // 100000) % 10]
-                + HANNUM[(self.microseconds // 10000) % 10]
-            ).replace("〇", "零"),
+                (
+                    HANNUM[(self.microseconds // 100000) % 10]
+                    + HANNUM[(self.microseconds // 10000) % 10]
+                ).replace("〇", "零")
+                if (self.microseconds // 10000)
+                else ""
+            ),
             微=(
                 (
                     "余"
@@ -693,7 +697,7 @@ class zhDateTime:
                 if (xiān := (self.microseconds % 100))
                 else ""
             ),
-        )
+        ).strip()
 
     def time_hanzify(self) -> str:
         return self.time_hànzì()
