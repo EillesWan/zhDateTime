@@ -117,11 +117,11 @@ def decode_lunar_month_code(
     """
     leap_month = (month_code & 0b1111000000000000) >> 12
     return (
-        [month_days_pusher(month_code, i) for i in range(leap_month)][::-1]
+        [month_days_pusher(month_code, i) for i in range(11, 11 - leap_month, -1)]
         + [
             leap_days,
         ]
-        + [month_days_pusher(month_code, i) for i in range(leap_month, 12)][::-1]
+        + [month_days_pusher(month_code, i) for i in range(11 - leap_month, -1, -1)]
         if leap_month
         else [month_days_pusher(month_code, i) for i in range(12)][::-1]
     ), leap_month
