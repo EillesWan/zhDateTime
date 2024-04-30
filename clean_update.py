@@ -7,15 +7,13 @@ console = Console()
 
 
 def main():
-    with console.status("Find the full path of .egg-info folder"):
+    with console.status("寻全档于 .egg-info 内"):
         egg_info: list = []
         for file in os.listdir():
             if file.endswith(".egg-info"):
                 egg_info.append(file)
                 console.print(file)
-    for file in track(
-        ["build", "dist", "logs", *egg_info], description="Deleting files"
-    ):
+    for file in track(["build", "dist", "logs", *egg_info], description="正清档"):
         if os.path.isdir(file) and os.access(file, os.W_OK):
             shutil.rmtree(file)
 
