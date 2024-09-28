@@ -9,7 +9,7 @@ setuptools.setup(
     version=zhDateTime.__version__,
     author="Eilles Wan",
     author_email="EillesWan@outlook.com",
-    description="一个简单的小巧的中式日期时间库，附带数字汉字化操作。",
+    description="中式日期时间库，附带数字汉字化功能。",
     long_description=open("README.md", "r", encoding="utf-8").read(),
     long_description_content_type="text/markdown",
     url="https://gitee.com/EillesWan/zhDateTime",
