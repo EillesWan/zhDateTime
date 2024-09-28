@@ -26,7 +26,7 @@ Numeric Units for Multiples of Ten
 """
 
 千外汉字数字单位 = HÀNUNITRW = (
-    "万亿兆京垓秭穰沟涧正载 "  # 请保留此处空格，参见 main.py的int_hàn_grouping函数
+    "万亿兆京垓秭穰沟涧正载 "  # 请保留此处空格，参见 main.py 的 `int_hàn_grouping` 函数
 )
 """
 千以上的汉字计数单位

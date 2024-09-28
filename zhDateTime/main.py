@@ -603,29 +603,119 @@ class zhDateTime:
         else:
             raise TypeError("加减单位不合理：你在用什么相减？")
 
-    def date_hànzì(self) -> str:
-        return "{汉字数字} {天干地支年}{生肖}年{月份}月{日期}日".format(
-            汉字数字="".join(
-                [HANNUM[(self.lunar_year // (10**i)) % 10] for i in range(3, -1, -1)]
-            ),
-            天干地支年=TIĀNGĀN[(yc := (self.lunar_year - 1984) % 60) % 10]
-            + DÌZHĪ[yc % 12],
-            生肖=SHĒNGXIÀO[(self.lunar_year - 1984) % 12],
-            月份=YUÈFÈN[self.lunar_month].replace("⑾", "十一"),
-            日期=(
-                HANNUM[self.lunar_day // 10] + "十"
-                if ((self.lunar_day % 10 == 0) and (self.lunar_day > 10))
-                else HÀNUNIT10P[self.lunar_day // 10]
-                + (HANNUM[self.lunar_day % 10] if self.lunar_day % 10 else "")
-            ),
+    @property
+    def western_year_hànzì(self) -> str:
+        """
+        西历年份，如：二〇二四
+        """
+        return "".join(
+            [HANNUM[(self.lunar_year // (10**i)) % 10] for i in range(3, -1, -1)]
         )
 
-    def date_hanzify(self) -> str:
-        return self.date_hànzì()
+    @property
+    def gānzhī_year(self):
+        """
+        干支年份，如：甲辰
+        """
+        return TIĀNGĀN[(yc := (self.lunar_year - 1984) % 60) % 10] + DÌZHĪ[yc % 12]
 
-    def time_hànzì(self) -> str:
-        return "{地支时}时{刻} {分}{秒}{忽} {微}{纤}".format(
-            地支时=DÌZHĪ[self.shichen]
+    @property
+    def shēngxiào(self):
+        """
+        当前生肖，如：龙
+        """
+        return SHĒNGXIÀO[(self.lunar_year - 1984) % 12]
+
+    @property
+    def month_hànzì(self):
+        """
+        汉字月份，如：八
+        """
+        return YUÈFÈN[self.lunar_month].replace("⑾", "十一")
+
+    @property
+    def day_hànzì(self):
+        """
+        汉字日期，如：廿六
+        """
+        return (
+            HANNUM[self.lunar_day // 10] + "十"
+            if ((self.lunar_day % 10 == 0) and (self.lunar_day > 10))
+            else HÀNUNIT10P[self.lunar_day // 10]
+            + (HANNUM[self.lunar_day % 10] if self.lunar_day % 10 else "")
+        )
+
+    def date_hànzì(
+        self, 格式文本: str = "{西历年} {干支年}{生肖}年{月份}月{日期}日"
+    ) -> str:
+        return 格式文本.format(
+            西历年=self.western_year_hànzì,
+            干支年=self.gānzhī_year,
+            生肖=self.shēngxiào,
+            月份=self.month_hànzì,
+            日期=self.day_hànzì,
+        )
+
+    def date_hanzify(
+        self, formatter: str = "{西历年} {干支年}{生肖}年{月份}月{日期}日"
+    ) -> str:
+        """
+        返回汉字的完整日期
+
+        参数
+        ----
+            formatter: 格式文本，需要生成的汉字的格式化样式。
+                可用参数为：西历年、干支年、生肖、月份、日期；
+                分别对应值：western_year_hànzì、gānzhī_year、shēngxiào、month_hànzì、day_hànzì
+                所有参数皆不带单位
+
+        返回值
+        ----
+            str日期字符串
+        """
+        return self.date_hànzì(格式文本=formatter)
+
+    @property
+    def dìzhī_hour(self):
+        """
+        地支时，如：午
+        """
+        return DÌZHĪ[self.shichen]
+
+    @property
+    def quarters_hànzì(self):
+        """
+        汉字刻数，如：七
+        """
+        return HANNUM[self.quarters]
+
+    @property
+    def minutes_hànzì(self):
+        """
+        汉字分钟，如：三
+        """
+        return lkint_hànzìfy(self.minutes)
+
+    @property
+    def seconds_hànzì(self):
+        """
+        汉字秒数，如：十
+        """
+        return lkint_hànzìfy(self.seconds)
+
+    @property
+    def cent_seconds_hànzì(self):
+        """
+        汉字忽秒，如：六七
+        """
+        return (
+            HANNUM[(self.microseconds // 100000) % 10]
+            + HANNUM[(self.microseconds // 10000) % 10]
+        ).replace("〇", "零")
+
+    def time_hànzì(self, 格式文本: str = "{地支时}时{刻} {分}{秒}{忽} {微}{纤}") -> str:
+        return 格式文本.format(
+            地支时=self.dìzhī_hour
             + (
                 ""
                 if (
@@ -638,7 +728,7 @@ class zhDateTime:
             ),
             刻=(
                 (
-                    (HANNUM[self.quarters] + "刻")
+                    (self.quarters_hànzì + "刻")
                     + (
                         ""
                         if ((self.minutes) or (self.seconds) or (self.microseconds))
@@ -652,7 +742,7 @@ class zhDateTime:
                 ("又" if self.quarters else "零")
                 + (
                     (
-                        lkint_hànzìfy(self.minutes)
+                        self.minutes_hànzì
                         + "分"
                         + ("" if ((self.seconds) or (self.microseconds)) else "整")
                     )
@@ -660,19 +750,8 @@ class zhDateTime:
                     else ""
                 )
             ),
-            秒=(
-                lkint_hànzìfy(self.seconds)
-                + "秒"
-                + ("" if (self.microseconds) else "整")
-            ),
-            忽=(
-                (
-                    HANNUM[(self.microseconds // 100000) % 10]
-                    + HANNUM[(self.microseconds // 10000) % 10]
-                ).replace("〇", "零")
-                if (self.microseconds // 10000)
-                else ""
-            ),
+            秒=(self.seconds_hànzì + "秒" + ("" if (self.microseconds) else "整")),
+            忽=(self.cent_seconds_hànzì if (self.microseconds // 10000) else ""),
             微=(
                 (
                     "余"
@@ -699,8 +778,26 @@ class zhDateTime:
             ),
         ).strip()
 
-    def time_hanzify(self) -> str:
-        return self.time_hànzì()
+    def time_hanzify(
+        self, formatter: str = "{地支时}时{刻} {分}{秒}{忽} {微}{纤}"
+    ) -> str:
+        """
+        返回汉字的完整时间表示
+
+        参数
+        ----
+            formatter: 格式文本，需要生成的汉字的格式化样式。
+                可用参数为：地支时、刻、分、秒、忽、微、纤
+                当 `刻` 为 `0` 时， `分` 会在其数字之前增加一个“零”字，否则增加的是“又”
+                当 `微`、`纤` 任意一个有值时，会在 `微` 的数字前增加一个“余”字
+                对于任意计量大小大于 `秒` 的单位，若小于其计量大小的所有单位之值皆为 `0` 时，其后会增加一个“整”字
+                除 `地支时` 外，其余参数皆自带单位
+
+        返回值
+        ----
+            str时间字符串
+        """
+        return self.time_hànzì(格式文本=formatter)
 
     def hànzì(self) -> str:
         return "{汉字日期} {汉字时刻}".format(

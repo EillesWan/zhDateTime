@@ -26,15 +26,25 @@ date_solar = date_lunar.to_solar()
 a_solar_date = DateTime.from_lunar(2024,3,False,13)
 a_lunar_date = zhDateTime.from_solar(2020,5,20)
 
+# DateTime 类是增强型的 datetime.datetime 类，因此可以用相同的方式使用后者的函数
+b_solar_datetime = DateTime.now()
+b_lunar_datetime = b_solar_datetime.to_lunar()
 
 # zhDateTime类可以进行汉字化输出
-print(DateTime.now().to_lunar().hanzify())
+print(b_lunar_datetime.hanzify())
 # 输出应类似 二〇二四 甲辰龙年三月十三日 午时 零十四分三秒九二 余十九微七十八纤
 # 也可以分日期和时间输出不同部分
-print(DateTime.now().to_lunar().date_hanzify())
+print(b_lunar_datetime.date_hanzify())
 # 类似 二〇二四 甲辰龙年三月十二日
-print(DateTime.now().to_lunar().time_hanzify())
+print(b_lunar_datetime.time_hanzify())
 # 类似 午时三刻 又一分三十秒三九 余五十五微六十纤
+
+# 汉字化的日期和时间函数是支持自定义格式的
+print(b_lunar_datetime.date_hanzify("{干支年}{生肖}年{月份}月"))
+# 类似 甲辰龙年三月
+print(b_lunar_datetime.time_hanzify("{地支时}时{刻} {分}{秒}{忽}"))
+# 类似 午时三刻 又一分三十秒三九
+# 具体可用的格式参数请详见函数文档
 
 
 # 此二类者，皆可己为加减

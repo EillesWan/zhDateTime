@@ -1,4 +1,4 @@
-from typing import Tuple, List, Optional, Union, Callable, Literal
+from typing import Literal
 
 TiāngānString = Literal["甲", "乙", "丙", "丁", "戊", "己", "庚", "辛", "壬", "癸"]
 """
