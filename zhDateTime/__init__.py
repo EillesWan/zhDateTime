@@ -2,14 +2,14 @@
 
 """
 版权所有 © 2024 金羿ELS
-Copyright (R) 2024 Eilles Wan
+Copyright (R) 2024 Eilles(EillesWan@outlook.com)
 
 This Source Code Form is subject to the terms of the Mozilla Public
 License, v. 2.0. If a copy of the MPL was not distributed with this
 file, You can obtain one at http://mozilla.org/MPL/2.0/.
 """
 
-__version__ = "1.1.0"
+__version__ = "1.1.1"
 __all__ = [
     # 所用之函数
     "shichen_ke_2_hour_minute",

@@ -2,7 +2,7 @@
 
 """
 版权所有 © 2024 金羿ELS
-Copyright (R) 2024 Eilles Wan
+Copyright (R) 2024 Eilles(EillesWan@outlook.com)
 
 This Source Code Form is subject to the terms of the Mozilla Public
 License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -32,7 +32,7 @@ Numeric Units for Multiples of Ten
 千以上的汉字计数单位
 """
 
-月份数字 = YUÈFÈN = MONTHNUM = " 正二三四五六七八九十⑾腊"
+月份数字 = YUÈFÈN = MONTHNUM = " 正二三四五六七八九十冬腊"
 """
 月份数字
 """

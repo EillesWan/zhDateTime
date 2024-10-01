@@ -2,7 +2,7 @@
 
 """
 版权所有 © 2024 金羿ELS
-Copyright (R) 2024 Eilles Wan
+Copyright (R) 2024 Eilles(EillesWan@outlook.com)
 
 This Source Code Form is subject to the terms of the Mozilla Public
 License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -201,7 +201,8 @@ def verify_lunar_date(
     ------
         Tuple(bool该日期是否可用, List[int]每月天数, int闰月月份)
     """
-    lunar_month_data = None
+    lunar_month_data = get_lunar_month_list(lunar_year)
+    
     verify_result = (
         (1900 <= lunar_year <= 2100)  # 确认年份范围
         and (1 <= lunar_month <= 12)  # 确认月份范围
@@ -210,29 +211,20 @@ def verify_lunar_date(
                 1 <= lunar_day <= get_lunar_leap_size(lunar_year)  # 获取闰月日数
                 and (
                     lunar_month
-                    == (lunar_month_data := get_lunar_month_list(lunar_year))[1]
+                    == lunar_month_data[1]
                 )  # 确认此月闰月与否
             )
             if is_leap
             else (  # 当非闰月时，确认日期范围
                 1
                 <= lunar_day
-                <= (  # 获取当月日数
-                    month_days_pusher(
-                        get_lunar_month_code(lunar_year),
-                        lunar_month,
-                    )
-                )
+                <= lunar_month_data[0][lunar_month - 1]
             )
         )
     )
     return (
         verify_result,
-        *(
-            lunar_month_data
-            if lunar_month_data is not None
-            else get_lunar_month_list(lunar_year)
-        ),
+        *lunar_month_data,
     )
 
 
@@ -506,7 +498,7 @@ class zhDateTime:
     ) -> None:
         is_leap_ = bool(is_leap_)
         # 确认支持年份、月份数字正误、日期数字正误
-        if verify_lunar_date(lunar_year_, lunar_month_, is_leap_, lunar_day_)[0]:
+        if (verify_lunar_date(lunar_year_, lunar_month_, is_leap_, lunar_day_))[0]:
             self.lunar_year = lunar_year_
             self.lunar_month = lunar_month_
             self.lunar_day = lunar_day_
@@ -520,8 +512,8 @@ class zhDateTime:
             self.microseconds = microseconds_ % 1000000
         else:
             raise ValueError(
-                "农历日期错误：不支持形如 {}年{}{}月{}日 的日期表示".format(
-                    lunar_year_, "闰" if is_leap_ else "", lunar_month_, lunar_day_
+                "农历日期错误：不支持形如 农历{}年{}{}月{}日 的日期表示\n".format(
+                    lunar_year_, "闰" if is_leap_ else "", lunar_month_, lunar_day_,
                 )
             )
 
@@ -631,7 +623,7 @@ class zhDateTime:
         """
         汉字月份，如：八
         """
-        return YUÈFÈN[self.lunar_month].replace("⑾", "十一")
+        return YUÈFÈN[self.lunar_month].replace("冬", "十一")
 
     @property
     def day_hànzì(self):
