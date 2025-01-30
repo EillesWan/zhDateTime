@@ -4,55 +4,70 @@
 
 一个简单小巧的轻量级中式日期时间库，支持农历公历互相转换，支持时辰刻数的时间表达转换，支持整数汉字化。
 
+**敬告：该库自 2.0.0 版本开始与之前的所有版本接口不再兼容**
+
 ### 用法
 
 1.  农历与公历
 
 ```python
-from zhDateTime import DateTime,zhDateTime
+# 导入模块中的类
+from zhDateTime import DateTime, zhDateTime
 
-# 利用DateTime类创建公历日期
-solar_date = DateTime(2020,5,20)
-# 利用to_lunar函数转换为农历日期
-lunar_date = solar.to_lunar()
+# 利用 DateTime 类创建公历日期
+western_date = DateTime(2020, 5, 20)
+# 利用 chinesize 属性转换为农历日期
+chinese_date = western_date.chinesize
 
-# 利用zhDateTime类创建农历日期
-date_lunar = zhDateTime(2024,3,False,13)    # 此处之False示意是否为闰月
-# 利用to_solar函数转换为公历日期
-date_solar = date_lunar.to_solar()
+# 利用 zhDateTime 类创建农历日期
+date_lunar = zhDateTime(2024, 3, False, 13)  # 此处之False示意是否为闰月
+# 利用 westernize 函数转换为公历日期
+date_solar = date_lunar.westernize
 
 
 # 也可以通过各自的类函数进行自主创建
-a_solar_date = DateTime.from_lunar(2024,3,False,13)
-a_lunar_date = zhDateTime.from_solar(2020,5,20)
+a_western_date = DateTime.from_chinese_format(2024, 3, False, 13)
+a_chinese_date = zhDateTime.from_western_format(2020, 5, 20)
 
 # DateTime 类是增强型的 datetime.datetime 类，因此可以用相同的方式使用后者的函数
-b_solar_datetime = DateTime.now()
-b_lunar_datetime = b_solar_datetime.to_lunar()
+b_western_datetime = DateTime.now()
+b_chinese_datetime = b_western_datetime.chinesize
 
 # zhDateTime类可以进行汉字化输出
-print(b_lunar_datetime.hanzify())
-# 输出应类似 二〇二四 甲辰龙年三月十三日 午时 零十四分三秒九二 余十九微七十八纤
-# 也可以分日期和时间输出不同部分
-print(b_lunar_datetime.date_hanzify())
-# 类似 二〇二四 甲辰龙年三月十二日
-print(b_lunar_datetime.time_hanzify())
-# 类似 午时三刻 又一分三十秒三九 余五十五微六十纤
+print(b_chinese_datetime.chinese_text)
+# 输出应类似
+# 公元二〇二五 农历乙巳蛇年 正月初三 丑时一刻 又十二分五十一秒八五 余五十一微六十二纤
+# 公元二〇二五 农历乙巳蛇年 正月初三 丑时 零四分廿五秒八四 余四微六十四纤
+# 公元二〇二五 农历乙巳蛇年 正月初三 子时四刻整
+
+# 也可以分日期和时间输出不同部分（参照国家标准，此处公元2024年是农历年首所在年份）
+print(b_chinese_datetime.date_hanzify())
+# 类似
+# 公元二〇二四 农历甲辰龙年 三月十二
+print(b_chinese_datetime.time_hanzify())
+# 类似
+# 午时三刻 又一分三十秒三九 余五十五微六十纤
+# 子时四刻整
+# 丑时 零四分廿五秒八四
+# 寅时二刻 又一分廿八秒
+# 卯时一刻 又四分整
+# 午时 零三十二秒 余四微三十六纤
 
 # 汉字化的日期和时间函数是支持自定义格式的
-print(b_lunar_datetime.date_hanzify("{干支年}{生肖}年{月份}月"))
+print(b_chinese_datetime.date_hanzify("{干支年}{生肖}年{月份}月"))
 # 类似 甲辰龙年三月
-print(b_lunar_datetime.time_hanzify("{地支时}时{刻} {分}{秒}{忽}"))
+print(b_chinese_datetime.time_hanzify("{地支时}时{刻} {分}{秒}{忽}"))
 # 类似 午时三刻 又一分三十秒三九
 # 具体可用的格式参数请详见函数文档
 
 
-# 此二类者，皆可己为加减
+# 此二类者，皆可各自加减
 print(
-    (zhDateTime(2024,3,False,12) + (DateTime.now() - DateTime(2024,3,1)))
-    - (DateTime.now().to_lunar() - zhDateTime(2023,2,False,1))
+    (zhDateTime(2024, 3, False, 12) + (DateTime.now() - DateTime(2024, 3, 1)))
+    - (DateTime.now().chinesize - zhDateTime(2023, 2, False, 1))
 )
-# 输出应为zhDateTime类，类似 农历 2023年3月22日 0时4刻0分0秒0
+# 输出应为zhDateTime类，类似
+# 公元2023年 农历3月22日 0时4刻0分0秒0
 ```
 
 2.  汉字数字表示法
@@ -89,7 +104,6 @@ lkint_hanzify(29)
 from zhDateTime import int_hanzify
 int_hanzify(1010045760500200000000026410400044640400000002)
 # 十载一千零四正五千七百六十涧五千零二沟零二百六十四垓一千零四十京零四十四兆六千四百零四亿零二
-
 ```
 
 3.  日期相关数据
@@ -97,14 +111,29 @@ int_hanzify(1010045760500200000000026410400044640400000002)
 ```python
 # 就这四个函数，，，自己看一下函数文档吧
 from zhDateTime import (
-    shichen_ke_2_hour_minute,
-    hour_minute_2_shichen_ke,
-    get_lunar_month_list,
-    get_lunar_new_year,
-    verify_lunar_date,
+    shichen_ke_2_hour_minute,  # 给出时辰和刻数，返回小时和分钟
+    hour_minute_2_shichen_ke,  # 给出小时和分钟，返回时辰和刻数
+    get_chinese_calendar_month_list,  # 依据提供的公历年份，给出当年每月天数列表及闰月月份
+    get_chinese_new_year,  # 依据提供的公历年份，返回当年的农历新年所在的公历日期
+    verify_chinese_calendar_date,  # 检查所给出之农历日期是否符合本库之可用性
 )
-
 ```
+
+### 授权
+
+zhDateTime 库源代码之授权采用 **木兰宽松许可证，第2版** 进行授权。
+
+> 版权所有 © 2025 金羿ELS  
+> Copyright (C) 2025 Eilles(EillesWan@outlook.com)
+>
+> zhDateTime is licensed under Mulan PSL v2.  
+> You can use this software according to the terms and conditions of the Mulan PSL v2.  
+> You may obtain a copy of Mulan PSL v2 at:  
+>         http://license.coscl.org.cn/MulanPSL2  
+> THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND,  
+> EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,  
+> MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.  
+> See the Mulan PSL v2 for more details.
 
 ### 参标
 

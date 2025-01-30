@@ -1,22 +1,27 @@
 # -*- coding: utf-8 -*-
 
 """
-版权所有 © 2024 金羿ELS
-Copyright (R) 2024 Eilles(EillesWan@outlook.com)
+版权所有 © 2025 金羿ELS
+Copyright (C) 2025 Eilles(EillesWan@outlook.com)
 
-This Source Code Form is subject to the terms of the Mozilla Public
-License, v. 2.0. If a copy of the MPL was not distributed with this
-file, You can obtain one at http://mozilla.org/MPL/2.0/.
+zhDateTime is licensed under Mulan PSL v2.
+You can use this software according to the terms and conditions of the Mulan PSL v2.
+You may obtain a copy of Mulan PSL v2 at:
+         http://license.coscl.org.cn/MulanPSL2
+THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND,
+EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
+MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
+See the Mulan PSL v2 for more details.
 """
 
-__version__ = "1.1.1"
+__version__ = "2.0.0"
 __all__ = [
     # 所用之函数
     "shichen_ke_2_hour_minute",
     "hour_minute_2_shichen_ke",
-    "get_lunar_month_list",
-    "get_lunar_new_year",
-    "verify_lunar_date",
+    "get_chinese_calendar_month_list",
+    "get_chinese_new_year",
+    "verify_chinese_calendar_date",
     "int_group",
     "int_group_seperated",
     "int_2_grouped_han_str",
@@ -32,7 +37,7 @@ __all__ = [
     # 所用之常量
     "TIANGAN",
     "DIZHI",
-    "HANNUM",
+    "NUM_IN_HANZI",
     "SHENGXIAO",
 ]
 
@@ -41,9 +46,9 @@ from .main import (
     # 所用之函数
     shíchen_kè_2_hour_minute,
     hour_minute_2_shíchen_kè,
-    get_lunar_month_list,
-    get_lunar_new_year,
-    verify_lunar_date,
+    get_chinese_calendar_month_list,
+    get_chinese_new_year,
+    verify_chinese_calendar_date,
     int_group,
     int_group_seperated,
     int_2_grouped_hàn_str,
@@ -57,10 +62,10 @@ from .main import (
     XXIVShíChenString,
     HànziNumericUnitsString,
     # 所用之常量
-    TIĀNGĀN,
-    DÌZHĪ,
-    HANNUM,
-    SHĒNGXIÀO,
+    CELESTIAL_STEMS,
+    TERRESTRIAL_BRANCHES,
+    NUM_IN_HANZI,
+    CHINESE_ZODIACS,
 )
 
 from .constants import (

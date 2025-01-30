@@ -1,11 +1,13 @@
 from typing import Tuple, List, Optional, Union, Callable, Literal
 
-TiāngānString = Literal["甲", "乙", "丙", "丁", "戊", "己", "庚", "辛", "壬", "癸"]
+TiāngānString = CelestialStem = Literal[
+    "甲", "乙", "丙", "丁", "戊", "己", "庚", "辛", "壬", "癸"
+]
 """
 天干字符串
 """
 
-DìzhīString = Literal[
+DìzhīString = TerrestrialBranch = Literal[
     "子", "丑", "寅", "卯", "辰", "巳", "午", "未", "申", "酉", "戌", "亥"
 ]
 """
@@ -60,7 +62,7 @@ XXIVShíChenString = Literal[
 二十四时辰表达法字符串
 """
 
-YuèfènString = Literal[
+YuèfènString = ChineseCalendarMonth = Literal[
     "正月",
     "二月",
     "三月",
@@ -78,7 +80,7 @@ YuèfènString = Literal[
 月份字符串
 """
 
-ShēngxiàoString = Literal[
+ShēngxiàoString = ChineseZodiac = Literal[
     "鼠", "牛", "虎", "兔", "龙", "蛇", "马", "羊", "猴", "鸡", "狗", "猪"
 ]
 """
