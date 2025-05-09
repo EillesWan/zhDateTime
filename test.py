@@ -1,7 +1,7 @@
-from zhDateTime import DateTime, int_hànzìfy, hour_minute_2_shichen_ke
-
-import random
 import datetime
+import random
+
+from zhDateTime import DateTime, hour_minute_2_shichen_ke, int_hànzìfy
 
 # 时区相差
 

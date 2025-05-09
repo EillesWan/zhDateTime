@@ -14,7 +14,7 @@ MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
 See the Mulan PSL v2 for more details.
 """
 
-汉字数字 = NUMBERS = NUM_IN_HANZI = "〇一二三四五六七八九"
+汉字数字 = NUMBERS = NUM_IN_HANZI = "〇一二三四五六七八九十"
 """
 汉字数字
 """

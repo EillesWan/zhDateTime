@@ -14,7 +14,7 @@ MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
 See the Mulan PSL v2 for more details.
 """
 
-__version__ = "2.0.0"
+__version__ = "2.0.1"
 __all__ = [
     # 所用之函数
     "shichen_ke_2_hour_minute",

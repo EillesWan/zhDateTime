@@ -17,29 +17,29 @@ See the Mulan PSL v2 for more details.
 import datetime
 from dataclasses import dataclass
 
-from .types import (
-    Tuple,
-    List,
-    Optional,
-    Union,
-    Callable,
-    ShíchenString,
-    XXIVShíChenString,
-    HànziNumericUnitsString,
-)
 from .constants import (
-    CHINESE_NEW_YEAR_DATE,
-    CHINESE_CALENDAR_MONTH_PER_YEAR,
-    LEAP_SIZE,
     CELESTIAL_STEMS,
-    TERRESTRIAL_BRANCHES,
-    NUM_IN_HANZI,
-    MONTHS_IN_HANZI,
+    CHINESE_CALENDAR_MONTH_PER_YEAR,
+    CHINESE_NEW_YEAR_DATE,
     CHINESE_ZODIACS,
     HÀNUNIT10P,
-    XXIVSHÍCHEN,
     HÀNUNITLK,
     HÀNUNITRW,
+    LEAP_SIZE,
+    MONTHS_IN_HANZI,
+    NUM_IN_HANZI,
+    TERRESTRIAL_BRANCHES,
+    XXIVSHÍCHEN,
+)
+from .types import (
+    Callable,
+    HànziNumericUnitsString,
+    List,
+    Optional,
+    ShíchenString,
+    Tuple,
+    Union,
+    XXIVShíChenString,
 )
 
 """
@@ -785,16 +785,15 @@ class zhDateTime:
         数序纪日，如：廿六
         """
         return (
-            NUM_IN_HANZI[self.chinese_calendar_day // 10] + "十"
-            if (
-                (self.chinese_calendar_day % 10 == 0)
-                and (self.chinese_calendar_day > 10)
-            )
-            else HÀNUNIT10P[self.chinese_calendar_day // 10]
-            + (
-                NUM_IN_HANZI[self.chinese_calendar_day % 10]
-                if self.chinese_calendar_day % 10
-                else ""
+            "初十"
+            if self.chinese_calendar_day == 10
+            else (
+                NUM_IN_HANZI[self.chinese_calendar_day // 10] + "十"
+                if (self.chinese_calendar_day % 10 == 0)
+                else (
+                    HÀNUNIT10P[self.chinese_calendar_day // 10]
+                    + NUM_IN_HANZI[self.chinese_calendar_day % 10]
+                )
             )
         )
 
@@ -877,7 +876,9 @@ class zhDateTime:
             + NUM_IN_HANZI[(self.microseconds // 10000) % 10]
         ).replace("〇", "零")
 
-    def time_in_hànzì(self, 格式文本: str = "{地支时}时{刻} {分}{秒}{忽} {微}{纤}") -> str:
+    def time_in_hànzì(
+        self, 格式文本: str = "{地支时}时{刻} {分}{秒}{忽} {微}{纤}"
+    ) -> str:
         return 格式文本.format(
             地支时=self.dìzhī_hour
             + (
@@ -964,14 +965,19 @@ class zhDateTime:
         return self.time_in_hànzì(格式文本=formatter)
 
     def hànzì(self) -> str:
-        return " ".join((self.date_in_hànzì(),self.time_in_hànzì(),))
+        return " ".join(
+            (
+                self.date_in_hànzì(),
+                self.time_in_hànzì(),
+            )
+        )
 
     def hanzify(self) -> str:
         """
         返回以汉语表示的完整日期和时间
         """
         return self.hànzì()
-    
+
     @property
     def chinese_text(self) -> str:
         """

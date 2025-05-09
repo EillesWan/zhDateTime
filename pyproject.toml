@@ -1,0 +1,59 @@
+[project]
+    name            = "zhDateTime"
+    dynamic         = ["version"]
+    requires-python = ">= 3.8, < 4.0"
+
+    authors = [
+        { name = "金羿Eilles" },
+    ]
+    maintainers = [
+        { name = "金羿Eilles", email = "EillesWan@outlook.com" },
+    ]
+
+    description = "中式日期时间库，附带数字汉字化功能。"
+    readme      = { file = "README.md", content-type = "text/markdown" }
+    license     = { file = "LICENSE" }
+
+    keywords = ["midi", "minecraft", "minecraft: bedrock edition"]
+    classifiers = [
+        "Intended Audience :: Developers",
+        "Natural Language :: Chinese (Simplified)",
+        "Programming Language :: Python",
+        "Programming Language :: Python :: 3",
+        "License :: OSI Approved :: Mulan Permissive Software License v2 (MulanPSL-2.0)",
+        "Operating System :: OS Independent",
+        "Topic :: Software Development :: Libraries",
+    ]
+
+
+[project.optional-dependencies]
+    dev = [
+        "twine",
+        "rich",
+    ]
+
+
+[project.urls]
+    # Homepage = "https://example.com"
+    # Documentation = "https://readthedocs.org"
+    Repository        = "https://gitee.com/EillesWan/zhDateTime"
+    Issues            = "https://gitee.com/EillesWan/zhDateTime/issues"
+    Mirror-Repository = "https://github.com/EillesWan/zhDateTime"
+    Mirror-Issues     = "https://github.com/EillesWan/zhDateTime/issues"
+
+
+[build-system]
+    requires      = ["pdm-backend"]
+    build-backend = "pdm.backend"
+
+# https://backend.pdm-project.org/build_config/#build-configurations
+[tool.pdm.build]
+    source-includes = [
+        "README.md",
+        "LICENSE",
+    ]
+
+
+[tool.pdm.version]
+    source = "file"
+    path   = "zhDateTime/__init__.py"
