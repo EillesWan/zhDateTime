@@ -47,7 +47,7 @@ from .types import (
 本软件之源码中包含大量汉语简体字，不懂的话请自行离开。
 
     注意
-此軟體源碼内含大量簡化字，若存不解勿觀之。
+此軟體源碼内含大量漢語簡化字，若存不解勿觀之。
 
     WARNING
 This source code contains plenty of simplified Han characters.
