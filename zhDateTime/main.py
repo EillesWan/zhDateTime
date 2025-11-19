@@ -243,7 +243,17 @@ def verify_chinese_calendar_date(
                 (
                     1
                     <= chinese_calendar_day
-                    <= _month_data[0][chinese_calendar_month - 1]
+                    <= _month_data[0][
+                        (
+                            (
+                                chinese_calendar_month
+                                + (chinese_calendar_month > _month_data[1])
+                            )  # 如果当年有闰月，则判断是否需要增加一个月的下标值
+                            if _month_data[1]
+                            else chinese_calendar_month  # 如果没有就是正常的
+                        )
+                        - 1
+                    ]
                 )  # 当非闰月时，确认日数范围
                 << 1
             )
