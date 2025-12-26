@@ -14,7 +14,7 @@
     readme      = { file = "README.md", content-type = "text/markdown" }
     license     = { file = "LICENSE" }
 
-    keywords = ["midi", "minecraft", "minecraft: bedrock edition"]
+    keywords = ["Chinese Calender", "zhdate", "calender", "datetime", "date", "time"]
     classifiers = [
         "Intended Audience :: Developers",
         "Natural Language :: Chinese (Simplified)",

@@ -14,7 +14,7 @@ MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
 See the Mulan PSL v2 for more details.
 """
 
-__version__ = "2.0.2"
+__version__ = "2.0.2.1"
 __all__ = [
     # 所用之函数
     "shichen_ke_2_hour_minute",
@@ -31,14 +31,16 @@ __all__ = [
     "zhDateTime",
     "DateTime",
     # 所用之数据类型标记
+    "CelestialStem",
+    "TerrestrialBranch",
     "ShíchenString",
     "XXIVShíChenString",
     "HànziNumericUnitsString",
     # 所用之常量
-    "TIANGAN",
-    "DIZHI",
     "NUM_IN_HANZI",
-    "SHENGXIAO",
+    "CELESTIAL_STEMS",
+    "TERRESTRIAL_BRANCHES",
+    "CHINESE_ZODIACS",
 ]
 
 
@@ -57,21 +59,21 @@ from .main import (
     # 所用之类
     zhDateTime,
     DateTime,
-    # 所用之数据类型标记
+)
+
+from .types import (
     ShíchenString,
     XXIVShíChenString,
     HànziNumericUnitsString,
-    # 所用之常量
-    CELESTIAL_STEMS,
-    TERRESTRIAL_BRANCHES,
-    NUM_IN_HANZI,
-    CHINESE_ZODIACS,
+    CelestialStem,
+    TerrestrialBranch,
 )
 
 from .constants import (
-    TIANGAN,
-    DIZHI,
-    SHENGXIAO,
+    NUM_IN_HANZI,
+    CELESTIAL_STEMS,
+    TERRESTRIAL_BRANCHES,
+    CHINESE_ZODIACS,
 )
 
 shichen_ke_2_hour_minute = shíchen_kè_2_hour_minute
